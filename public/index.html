@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Welcome - Login System</title>
+</head>
+<body>
+    <center>
+        <h1>Welcome to the Login System</h1>
+        <p>This is a simple login system built with Node.js and Express.js</p>
+        
+        <table width="1000" cellpadding="20" cellspacing="0">
+            <tr>
+                <!-- Left Column -->
+                <td width="50%" valign="top">
+                    <h2>Available to test Users:</h2>
+                    <table border="1" cellpadding="10" cellspacing="0" width="100%">
+                        <tr>
+                            <td><b>Username:</b> admin</td>
+                            <td><b>Password:</b> admin123</td>
+                        </tr>
+                        <tr>
+                            <td><b>Username:</b> user</td>
+                            <td><b>Password:</b> user123</td>
+                        </tr>
+                    </table>
+                    
+                    <br><br>
+                    
+                    <h3>How to use:</h3>
+                    <ul>
+                        <li>Enter your username and password</li>
+                        <li>Click the Login button</li>
+                        <li>If successful, you'll be redirected to dashboard</li>
+                    </ul>
+                </td>
+                
+                <!-- Right Column -->
+                <td width="50%" valign="top">
+                    <h2>Login Form</h2>
+                    <form id="loginForm">
+                        <table cellpadding="5" cellspacing="0" width="100%">
+                            <tr>
+                                <td><b>Username:</b></td>
+                                <td><input type="text" id="username" name="username" size="30" required></td>
+                            </tr>
+                            <tr>
+                                <td><b>Password:</b></td>
+                                <td><input type="password" id="password" name="password" size="30" required></td>
+                            </tr>
+                            <tr>
+                                <td colspan="2" align="center">
+                                    <input type="submit" value="Login" size="20">
+                                </td>
+                            </tr>
+                        </table>
+                    </form>
+                    
+                    <div id="message"></div>
+                </td>
+            </tr>
+        </table>
+    </center>
+    
+    <script>
+        document.getElementById('loginForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            const messageDiv = document.getElementById('message');
+            
+            try {
+                const response = await fetch('/api/login', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ username, password })
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    messageDiv.innerHTML = '<p><b>✅ ' + data.message + '</b></p>';
+                    messageDiv.innerHTML += '<p><b>👋 Welcome, ' + data.username + '!</b></p>';
+                    messageDiv.innerHTML += '<p><b>🔄 Redirecting to dashboard...</b></p>';
+                    
+                    // Clear form
+                    document.getElementById('loginForm').reset();
+                    
+                    // Automatically redirect to dashboard after 1 second
+                    setTimeout(() => {
+                        window.location.href = '/dashboard';
+                    }, 1000);
+                } else {
+                    messageDiv.innerHTML = '<p><b>❌ ' + data.message + '</b></p>';
+                }
+            } catch (error) {
+                messageDiv.innerHTML = '<p><b>❌ Error: ' + error.message + '</b></p>';
+            }
+        });
+    </script>
+</body>
+</html> 
